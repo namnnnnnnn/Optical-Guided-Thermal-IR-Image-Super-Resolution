@@ -15,7 +15,7 @@ low-resolution **thermal infrared (TIR)** satellite images, using a co-registere
 On the more degraded half of the test set the model adds **+4.7 dB PSNR** on average
 (see [Results](#8-results)).
 
-*Final-year Major Project, Dept. of AI & ML, CMR Institute of Technology, Bengaluru (VTU).*
+*Final-year Major Project, Dept. of CSE (AI & ML), CMR Institute of Technology, Bengaluru (VTU).*
 
 ---
 
