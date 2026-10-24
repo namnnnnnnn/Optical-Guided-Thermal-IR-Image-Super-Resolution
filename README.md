@@ -203,7 +203,7 @@ python demo_train.py    # shows LR | SR | HR for one scene
 
 ## 7. Web Demo (Gradio)
 
-![Attention map](docs/images/attention_example.png)
+![Gradio demo](docs/images/demo_screenshot.png)
 
 1. Make sure `checkpoints/best_model_1000.pth` exists.
 2. (Optional) Export a few test scenes as PNG examples:
@@ -276,6 +276,8 @@ Regenerate these tables from `outputs/metrics/results.csv` at any time with
   saturation effect described above, and the motivation for residual learning:
 
 ![Error map](docs/images/error_map_example.png)
+
+![Attention map](docs/images/attention_example.png)
 
 - **Attention maps** vary across the scene and highlight structurally distinct terrain,
   showing the model selects *where* optical guidance is useful instead of copying the
