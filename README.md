@@ -270,8 +270,10 @@ Regenerate these tables from `outputs/metrics/results.csv` at any time with
 
 ![Metric distributions](docs/images/metric_distributions.png)
 
-- **Error maps** (absolute error vs. ground truth, shared colour scale) show where the
-  remaining error lies — mostly on sharp boundaries such as rivers and ridgelines:
+- **Error maps** (absolute error vs. ground truth, shared colour scale). The example below
+  is a *near-clean* scene (Q4): the input error is already very low (0.0028) and the
+  model's output adds a small, roughly uniform offset in smooth regions (0.0054) — the
+  saturation effect described above, and the motivation for residual learning:
 
 ![Error map](docs/images/error_map_example.png)
 
