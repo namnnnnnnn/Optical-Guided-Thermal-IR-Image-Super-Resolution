@@ -41,6 +41,20 @@ def summarize(csv_path):
     print(f"  Seen in training (overlap)    : {int(seen.sum())}")
     report("All comparable scenes", ~identical)
     report("Unseen-only comparable scenes", ~identical & ~seen)
+
+    # Gain by input difficulty: quartiles of LR PSNR (Q1 = hardest scenes)
+    valid = ~identical
+    edges = np.percentile(lr["PSNR"][valid], [0, 25, 50, 75, 100])
+    print("\n  Gain by input difficulty (quartiles of LR PSNR, Q1 = hardest)")
+    print(f"  {'Quartile':<8} | {'LR PSNR range':>15} | {'n':>5} | {'PSNR gain':>9} | "
+          f"{'SSIM gain':>9} | {'RMSE change':>11} | SR better (PSNR)")
+    for q in range(4):
+        m = valid & (lr["PSNR"] >= edges[q]) & ((lr["PSNR"] < edges[q + 1]) | (q == 3))
+        dp = sr["PSNR"][m] - lr["PSNR"][m]
+        ds = sr["SSIM"][m] - lr["SSIM"][m]
+        dr = (sr["RMSE"][m].mean() / lr["RMSE"][m].mean() - 1) * 100
+        print(f"  Q{q + 1:<7} | {edges[q]:6.2f} - {edges[q + 1]:6.2f} | {int(m.sum()):>5} | "
+              f"{dp.mean():>+9.3f} | {ds.mean():>+9.4f} | {dr:>+10.1f}% | {(dp > 0).mean() * 100:5.1f} %")
     print("=" * 72)
 
 
