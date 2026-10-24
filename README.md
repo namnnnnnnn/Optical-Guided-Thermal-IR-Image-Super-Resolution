@@ -15,7 +15,7 @@ low-resolution **thermal infrared (TIR)** satellite images, using a co-registere
 On the more degraded half of the test set the model adds **+4.7 dB PSNR** on average
 (see [Results](#8-results)).
 
-*Final-year Major Project, Dept. of AI & ML, CMR Institute of Technology, Bengaluru (VTU).*
+*Final-year Major Project, Dept. of CSE (AI & ML), CMR Institute of Technology, Bengaluru (VTU).*
 
 ---
 
@@ -328,13 +328,14 @@ The plots and per-scene CSV from the original run are in `outputs.zip`.
 
 ## 12. Team
 
-| Name | Role |
+| Name | USN |
 |---|---|
-| Nilotpal Arya | Student, Dept. of AI & ML, CMRIT |
-| Abdulrehan M K | Student, Dept. of AI & ML, CMRIT |
-| Naman Jain | Student, Dept. of AI & ML, CMRIT |
-| Purvi Ashok Kalliganur | Student, Dept. of AI & ML, CMRIT |
-| **Ms. Divyamani L.** | Project Guide, Assistant Professor, Dept. of AI & ML, CMRIT |
+| Abdulrehman Mohammedismail Konankeri | 1CR23CI001 |
+| Naman Jain | 1CR23CI030 |
+| Purvi Ashok Kalliganur | 1CR23CI040 |
+| Nilotpal Arya | 1CR23CI064 |
+
+**Project guide:** Ms. Divyamani L S, Assistant Professor, CMR Institute of Technology
 
 **Research paper:** *AttentionThermalSR: An Optical-Guided Attention-Based Multimodal
 Framework for Thermal Infrared Image Super-Resolution* (submitted).
