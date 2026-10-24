@@ -6,11 +6,14 @@ low-resolution **thermal infrared (TIR)** satellite images, using a co-registere
 
 ![SR comparison](docs/images/prediction_example.png)
 
-| Metric (test set, n = 3,750) | Mean ± Std | Median |
-|---|---|---|
-| **PSNR** | 43.56 ± 3.63 dB | 43.75 dB |
-| **SSIM** | 0.9911 ± 0.0094 | 0.9920 |
-| **RMSE** | 0.0074 ± 0.0049 | 0.0065 |
+| Metric (test set) | Model output | LR input (baseline) | Scenes improved |
+|---|---|---|---|
+| **PSNR** | 43.56 ± 3.64 dB | 43.43 dB | 54 % |
+| **SSIM** | 0.9910 ± 0.0094 | 0.9881 | **91 %** |
+| **RMSE** | 0.0074 ± 0.0049 | 0.0085 (−13 %) | 54 % |
+
+On the more degraded half of the test set the model adds **+4.7 dB PSNR** on average
+(see [Results](#8-results)).
 
 *Final-year Major Project, Dept. of AI & ML, CMR Institute of Technology, Bengaluru (VTU).*
 
@@ -79,6 +82,7 @@ Optical-Guided-Thermal-IR-Image-Super-Resolution/
 │   ├── model.py           # AttentionThermalSR (encoders, CBAM, fusion, decoder)
 │   ├── train.py           # Training loop (MSE + gradient loss), saves best checkpoint
 │   ├── evaluate.py        # PSNR/SSIM/RMSE + LR baseline + plots + CSV
+│   ├── summarize_results.py # SR vs LR-baseline summary + gain by input difficulty
 │   ├── demo_train.py      # Quick single-scene visual check
 │   ├── export_samples.py  # Export test scenes as PNGs for the web demo
 │   └── check_gpu.py       # Prints PyTorch / CUDA / GPU info
@@ -226,14 +230,48 @@ To get a temporary public link (e.g. for a remote reviewer), set
 
 ## 8. Results
 
+Evaluated on the 3,750-scene test split (17 scenes whose LR input is identical to HR
+are excluded from baseline comparisons → n = 3,733). The **LR-input baseline** scores
+the degraded input directly against the ground truth, so the gain contributed by the
+model is visible.
+
+| Metric | Model output (SR) | LR input | Gain | Scenes where SR is better |
+|---|---|---|---|---|
+| PSNR (dB) ↑ | 43.56 ± 3.64 | 43.43 | +0.14 | 53.9 % |
+| SSIM ↑ | 0.9910 ± 0.0094 | 0.9881 | +0.0030 | 90.7 % |
+| RMSE ↓ | 0.0074 ± 0.0049 | 0.0085 | −0.0011 (−13 %) | 53.7 % |
+
+116 test scenes (3.1 %) were part of the 1,000-scene training subset; excluding them
+(n = 3,619) gives the same numbers (PSNR +0.15 dB, SSIM +0.0030).
+
+### Where does the model help?
+
+![Gain by input difficulty](docs/images/gain_by_difficulty.png)
+
+| Input difficulty (LR PSNR quartile) | PSNR gain | RMSE change | Scenes improved |
+|---|---|---|---|
+| Q1 hardest (24 – 40 dB) | **+6.58 dB** | **−46 %** | 98.5 % |
+| Q2 (40 – 44 dB) | **+2.89 dB** | −23 % | 75.6 % |
+| Q3 (44 – 46 dB) | −1.17 dB | +22 % | 38.5 % |
+| Q4 near-clean (46 – 84 dB) | −7.75 dB | +128 % | 3.1 % |
+
+- The degraded input is already close to the ground truth (43.43 dB), so the headline
+  PSNR is largely inherited from the input.
+- The model **substantially restores degraded scenes** (+4.7 dB on the harder half) and
+  **improves structure (SSIM) in every quartile**.
+- On near-clean inputs its reconstruction saturates at roughly 45 dB and slightly
+  degrades them. Predicting a residual correction (`output = LR + correction`) is the
+  planned fix (see [Future Work](#11-limitations--future-work)).
+
+Regenerate these tables from `outputs/metrics/results.csv` at any time with
+`python summarize_results.py`.
+
+### Qualitative results
+
 ![Metric distributions](docs/images/metric_distributions.png)
 
-- **87 %** of test scenes exceed 40 dB PSNR; **98.8 %** exceed 0.98 SSIM.
-- The model was trained on only **700 scenes** yet evaluated on **3,750** — the results
-  reflect generalisation to new geography, not memorisation.
-- **Error maps** (absolute error vs. ground truth) show the remaining error is small
-  everywhere and concentrated on sharp boundaries (rivers, ridgelines). `evaluate.py`
-  reports the LR-input baseline alongside the model's metrics to quantify the gain:
+- **Error maps** (absolute error vs. ground truth, shared colour scale) show where the
+  remaining error lies — mostly on sharp boundaries such as rivers and ridgelines:
 
 ![Error map](docs/images/error_map_example.png)
 
@@ -241,13 +279,13 @@ To get a temporary public link (e.g. for a remote reviewer), set
   showing the model selects *where* optical guidance is useful instead of copying the
   optical image wholesale.
 
-The full set of plots and the per-scene CSV from the reported run are in `outputs.zip`.
+The plots and per-scene CSV from the original run are in `outputs.zip`.
 
 ## 9. Configuration Reference
 
 | Environment variable | Default | Used by |
 |---|---|---|
-| `THERMAL_SR_DATA` | `data/ssl4eo_processed` | train, evaluate, demo_train, export_samples |
+| `THERMAL_SR_DATA` | `data/ssl4eo_processed`, else `../ssl4eo_processed` | train, evaluate, demo_train, export_samples |
 | `THERMAL_SR_CHECKPOINT` | `checkpoints/best_model_1000.pth` | train (save), evaluate, demo_train, app |
 | `THERMAL_SR_OUTPUTS` | `outputs/` | evaluate |
 | `THERMAL_SR_SHARE` | unset | app (`1` = public Gradio link) |
@@ -273,6 +311,13 @@ The full set of plots and the per-scene CSV from the reported run are in `output
 
 ## 11. Limitations & Future Work
 
+- **Saturation on near-clean inputs:** the model rebuilds the full image, so inputs that
+  are already better than ~45 dB get slightly worse. Residual learning
+  (`output = LR + predicted correction`) is the primary planned fix.
+- **Ablation study** (thermal-only, no-attention variants) to isolate the contribution of
+  optical guidance and CBAM.
+- 17 test scenes have an LR input identical to HR — the degradation step should be
+  checked for these.
 - Assumes the optical and thermal images are accurately co-registered; robustness to
   misalignment is not yet tested.
 - Trained on a 1,000-scene subset because of compute limits — training on all 17,500
