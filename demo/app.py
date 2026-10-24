@@ -16,15 +16,20 @@ from PIL import Image
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from model import AttentionThermalSR
+from config import CHECKPOINT_PATH as CKPT, SAMPLES_DIR
 
 
 # ─── Config ───────────────────────────────────────────────────────────────────
 
-CHECKPOINT_PATH = r"D:\files\major_proj\Optical-Guided-Super-Resolution-for-Thermal-IR-Imagery-main\checkpoints\best_model.pth"
+CHECKPOINT_PATH = CKPT
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 # ─── Load Model Once at Startup ────────────────────────────────────────────────
+
+if not os.path.exists(CHECKPOINT_PATH):
+    sys.exit(f"[Demo] Checkpoint not found: {CHECKPOINT_PATH}\n"
+             f"       Place best_model_1000.pth in checkpoints/ or set THERMAL_SR_CHECKPOINT.")
 
 print(f"[Demo] Loading model on {DEVICE}...")
 model = AttentionThermalSR().to(DEVICE)
@@ -134,7 +139,7 @@ with gr.Blocks(title="Thermal IR Super-Resolution") as demo:
 
     - Model: AttentionThermalSR (CBAM Attention)
     - Dataset: Landsat-8 Satellite Imagery (SSL4EO)
-    - Metrics: PSNR 44.31 dB | SSIM 0.9912 | RMSE 0.0071
+    - Test-set metrics (3,750 scenes): PSNR 43.56 dB | SSIM 0.9911 | RMSE 0.0074
     """)
 
     with gr.Row():
@@ -158,6 +163,19 @@ with gr.Blocks(title="Thermal IR Super-Resolution") as demo:
                 label="LR | Optical | SR Comparison"
             )
 
+    # Example pairs exported with src/export_samples.py (shown only if present)
+    if os.path.isdir(SAMPLES_DIR):
+        examples = []
+        for name in sorted(os.listdir(SAMPLES_DIR)):
+            if name.endswith("_thermal_lr.png"):
+                stem = name[:-len("_thermal_lr.png")]
+                opt = os.path.join(SAMPLES_DIR, f"{stem}_optical.png")
+                if os.path.exists(opt):
+                    examples.append([os.path.join(SAMPLES_DIR, name), opt])
+        if examples:
+            gr.Examples(examples=examples, inputs=[thermal_input, optical_input],
+                        label="Sample scenes (click to load)")
+
     run_btn.click(
         fn=run_super_resolution,
         inputs=[thermal_input, optical_input],
@@ -168,11 +186,12 @@ with gr.Blocks(title="Thermal IR Super-Resolution") as demo:
     ---
     **Project:** Optical-Guided Thermal IR Super-Resolution | Final Year Major Project  
     **Architecture:** Dual CNN Encoder + CBAM Attention + Additive Fusion + Decoder  
-    **Training:** 50 epochs on 2118 Landsat-8 scenes | Google Colab T4 GPU
+    **Training:** 25 epochs on a 1,000-scene subset (700 train / 150 val) | ~58K parameters
     """)
 
 
 # ─── Launch ───────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    demo.launch(share=True)   # share=True gives a public URL
+    # Set THERMAL_SR_SHARE=1 to get a temporary public gradio.live URL
+    demo.launch(share=os.environ.get("THERMAL_SR_SHARE") == "1")

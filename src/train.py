@@ -3,7 +3,8 @@ train.py
 Role: Full training loop for AttentionThermalSR model.
 Loss: MSE + 0.1 * Gradient Loss
 Optimizer: Adam lr=1e-3
-Scheduler: CosineAnnealingLR T_max=50
+Scheduler: CosineAnnealingLR T_max=EPOCHS (25)
+Training subset: first 1,000 scenes (700 train / 150 val / 150 test)
 Saves best model checkpoint based on validation loss.
 """
 
@@ -16,13 +17,14 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 
 from dataset import ThermalOpticalDataset, get_dataloaders
 from model import AttentionThermalSR
+from config import DATA_ROOT, CHECKPOINT_PATH
 
 
 # ─── Config ───────────────────────────────────────────────────────────────────
 
-ROOT_DIR = r"D:\files\major_proj\ssl4eo_processed"
-CHECKPOINT_DIR = r"../checkpoints"
-CHECKPOINT_PATH = os.path.join(CHECKPOINT_DIR, "best_model_1000.pth")
+ROOT_DIR       = DATA_ROOT
+CHECKPOINT_DIR = os.path.dirname(CHECKPOINT_PATH)
+MAX_SAMPLES    = 1000   # training subset size (compute constraint)
 
 EPOCHS        = 25
 BATCH_SIZE    = 8
@@ -70,7 +72,7 @@ def train():
 
     # Load data
     print("[Train] Loading dataset...")
-    train_loader, val_loader, _ = get_dataloaders(ROOT_DIR, batch_size=BATCH_SIZE, max_samples=1000)
+    train_loader, val_loader, _ = get_dataloaders(ROOT_DIR, batch_size=BATCH_SIZE, max_samples=MAX_SAMPLES)
 
     # Initialize model
     model = AttentionThermalSR().to(device)

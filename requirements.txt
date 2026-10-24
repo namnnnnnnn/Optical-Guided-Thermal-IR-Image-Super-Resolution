@@ -1,0 +1,10 @@
+# Core
+torch>=2.0
+numpy>=1.24
+rasterio>=1.3        # GeoTIFF loading (dataset.py)
+scikit-image>=0.21   # PSNR / SSIM (evaluate.py)
+matplotlib>=3.7
+pillow>=9.5
+
+# Web demo
+gradio>=4.0

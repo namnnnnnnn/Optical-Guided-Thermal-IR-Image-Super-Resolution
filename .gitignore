@@ -69,7 +69,9 @@ venv/
 outputs/
 
 # Model Checkpoints
-checkpoints/
+checkpoints/*
 
 # VS Code
 .vscode/
+# Ship the small (~230 KB) trained model so the demo works out of the box
+!checkpoints/best_model_1000.pth

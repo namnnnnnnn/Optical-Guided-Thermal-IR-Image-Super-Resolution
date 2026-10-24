@@ -1,3 +1,8 @@
+"""
+check_gpu.py
+Role: Environment check - prints PyTorch / CUDA versions and the GPU name.
+"""
+
 import torch
 
 print(torch.__version__)

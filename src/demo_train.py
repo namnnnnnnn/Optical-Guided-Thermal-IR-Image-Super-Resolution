@@ -1,12 +1,19 @@
+"""
+demo_train.py
+Role: Quick visual sanity check - runs the trained model on one scene and
+      shows LR | SR | HR side by side.
+"""
+
 import torch
 import matplotlib.pyplot as plt
 
 from model import AttentionThermalSR
 from dataset import ThermalOpticalDataset
+from config import DATA_ROOT, CHECKPOINT_PATH
 
 # Paths
-ROOT_DIR = r"D:\files\major_proj\ssl4eo_processed"
-CHECKPOINT = r"../checkpoints/best_model_1000.pth"
+ROOT_DIR = DATA_ROOT
+CHECKPOINT = CHECKPOINT_PATH
 
 # Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

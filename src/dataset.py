@@ -2,8 +2,9 @@
 dataset.py
 Role: Loads optical + thermal LR/HR pairs from processed dataset.
       Returns tensors ready for model input.
-Dataset root: E:\major project resource\ssl4eo_processed
-Scenes: 3026 | Image size: 264x264 | Split: 70/15/15
+Dataset root: set via config.DATA_ROOT (env var THERMAL_SR_DATA)
+Layout: <root>/<region>/<scene>/{optical.tif, thermal_lr.tif, thermal_hr.tif}
+Scenes: 25,000 | Image size: 264x264 | Split: 70/15/15 (seed 42)
 """
 
 import os
@@ -128,7 +129,8 @@ def get_dataloaders(root_dir, batch_size=8, num_workers=0, max_samples=None):
 
 # ─── Quick verification ───────────────────────────────────────────────────────
 if __name__ == "__main__":
-    ROOT = r"D:\files\major_proj\ssl4eo_processed"
+    from config import DATA_ROOT
+    ROOT = DATA_ROOT
 
     train_loader, val_loader, test_loader = get_dataloaders(ROOT, batch_size=8)
 
