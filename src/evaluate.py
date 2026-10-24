@@ -209,7 +209,7 @@ def evaluate():
 
     # Load model
     model = AttentionThermalSR().to(device)
-    model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location=device))
+    model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location=device, weights_only=True))
     model.eval()
     print(f"[Evaluate] Loaded checkpoint: {CHECKPOINT_PATH}")
 

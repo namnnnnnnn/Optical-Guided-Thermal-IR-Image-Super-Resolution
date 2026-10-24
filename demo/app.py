@@ -33,7 +33,7 @@ if not os.path.exists(CHECKPOINT_PATH):
 
 print(f"[Demo] Loading model on {DEVICE}...")
 model = AttentionThermalSR().to(DEVICE)
-model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location=DEVICE))
+model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location=DEVICE, weights_only=True))
 model.eval()
 print("[Demo] Model loaded. Ready for inference.")
 

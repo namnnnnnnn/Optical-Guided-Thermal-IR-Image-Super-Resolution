@@ -145,7 +145,8 @@ ssl4eo_processed/
 - Split: **70 / 15 / 15** (train / val / test) with a fixed seed (42) — 17,500 / 3,750 / 3,750 scenes.
 
 The dataset is too large for GitHub. Point the code at your copy with an environment
-variable (or place it at `data/ssl4eo_processed/` inside the repo):
+variable, or place it at `data/ssl4eo_processed/` inside the repo or `ssl4eo_processed/` next to
+the repo folder (both are found automatically):
 
 ```bash
 # Windows (PowerShell)

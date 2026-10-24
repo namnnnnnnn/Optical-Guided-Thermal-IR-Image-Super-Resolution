@@ -20,7 +20,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load trained model
 model = AttentionThermalSR().to(device)
-model.load_state_dict(torch.load(CHECKPOINT, map_location=device))
+model.load_state_dict(torch.load(CHECKPOINT, map_location=device, weights_only=True))
 model.eval()
 
 # Load one test sample

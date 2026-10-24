@@ -34,6 +34,11 @@ class ThermalOpticalDataset(Dataset):
         self.scene_paths = []
         self.max_samples = max_samples
 
+        if not os.path.isdir(root_dir):
+            raise FileNotFoundError(
+                f"Dataset folder not found: {root_dir}\n"
+                f"Set it with:  $env:THERMAL_SR_DATA = \"<path to ssl4eo_processed>\"  (PowerShell)")
+
         # Walk through all region/scene folders and collect valid scene paths
         for region in sorted(os.listdir(root_dir)):
             region_path = os.path.join(root_dir, region)
