@@ -4,7 +4,8 @@ A lightweight, attention-based deep learning model that restores fine detail in
 low-resolution **thermal infrared (TIR)** satellite images, using a co-registered
 **high-resolution optical (RGB)** image of the same location as a structural guide.
 
-![SR comparison](docs/images/prediction_example.png)
+![SR comparison](docs/images/prediction_hard_example.png)
+*Degraded test scene: LR input 37.33 dB → model output 49.33 dB (+12 dB, 75 % lower RMSE).*
 
 | Metric (test set) | Model output | LR input (baseline) | Scenes improved |
 |---|---|---|---|
@@ -270,8 +271,13 @@ Regenerate these tables from `outputs/metrics/results.csv` at any time with
 
 ![Metric distributions](docs/images/metric_distributions.png)
 
-- **Error maps** (absolute error vs. ground truth, shared colour scale). The example below
-  is a *near-clean* scene (Q4): the input error is already very low (0.0028) and the
+- **Error maps** (absolute error vs. ground truth, shared colour scale per figure).
+  On a **degraded scene** (Q1) the model removes most of the error — mean absolute
+  error falls from 0.0131 to 0.0025 (−81 %):
+
+![Error map, degraded scene](docs/images/error_map_hard_example.png)
+
+- On a *near-clean* scene (Q4) the input error is already very low (0.0028) and the
   model's output adds a small, roughly uniform offset in smooth regions (0.0054) — the
   saturation effect described above, and the motivation for residual learning:
 
